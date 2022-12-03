@@ -1,9 +1,10 @@
 t = 0 # start time
-Tf = 20 # end time
+Tf = 5 # end time
 # variables for modeling
 tau = 0.5 
 mass = 80
 F = 2000
+Fdz = 10000000 #danger zone force ## NOTE: In final code this will depend on the person
 Fwall = 20000
 lambda_ = 0.5
 delta = 0.08 
@@ -15,7 +16,7 @@ drawper = 1000 # generate plot for 1 per 1000 iterations of dt
 
 ## Parameters for generating ##
 nn = 10 # number of people
-box = [120,130,10,20] # coordinates of the box that will be populated [xmin, xmax, ymin, ymax]
+box = [120,130,35,40] # coordinates of the box that will be populated [xmin, xmax, ymin, ymax]
 dest_name = "door" # name given to by domain.add_destination function
 radius_distribution = ["uniform",0.4,0.6] # distribution variable 
 velocity_distribution = ["normal",1.2,0.1] # distribution varible
@@ -23,6 +24,8 @@ rng = 0 # some seed value for the distribution, if =0 then random value will be 
 dt = 0.0005 # timestep
 dmin_people=0 # minimal disired distance to other people 
 dmin_walls=0 # minimal disired distance to walls
+## Station specific ##
+dzy = 30 # y coord of upper danger zone #Moet 40 zijn ong
 
 #need to be intitailized to play nice
 draw = False
@@ -95,7 +98,9 @@ while(t<Tf):
     print("===> Compute social forces for domain ",name)  
     contacts = compute_contacts(dom, people["xyrv"], dmax)
     print("     Number of contacts: ",contacts.shape[0])
-    Forces = compute_forces(F, Fwall, people["xyrv"], contacts, people["Uold"], Vd, lambda_, delta, kappa, eta)            
+    #Forces = compute_forces(F, Fwall, people["xyrv"], contacts, people["Uold"], Vd, lambda_, delta, kappa, eta) 
+    Forces = compute_forces_dz(F, Fwall, people["xyrv"], contacts, people["Uold"], Vd, lambda_, delta, kappa, eta, Fdz, dzy) 
+    print(Forces)        
     nn = people["xyrv"].shape[0]
     people["U"] = dt*(Vd[:nn,:]-people["Uold"][:nn,:])/tau + people["Uold"][:nn,:] + dt*Forces[:nn,:]/mass
 
