@@ -1,17 +1,19 @@
 t = 0 # start time
-Tf = 40 # end time
+Tf = 20 # end time
 # variables for modeling
 tau = 0.5 
 mass = 80
 F = 2000
 Fwall = 20000
 lambda_ = 0.5
-delta = 0.08
+delta = 0.08 
 kappa = 120000
 eta = 240000
 dmax = 0.1 # max distance to take in account for contacts
 drawper = 1000 # generate plot for 1 per 1000 iterations of dt
 
+
+## Parameters for generating ##
 nn = 10 # number of people
 box = [120,130,10,20] # coordinates of the box that will be populated [xmin, xmax, ymin, ymax]
 dest_name = "door" # name given to by domain.add_destination function
@@ -19,7 +21,7 @@ radius_distribution = ["uniform",0.4,0.6] # distribution variable
 velocity_distribution = ["normal",1.2,0.1] # distribution varible
 rng = 0 # some seed value for the distribution, if =0 then random value will be chosen on run
 dt = 0.0005 # timestep
-dmin_people=0 # minimal disired distance to other people
+dmin_people=0 # minimal disired distance to other people 
 dmin_walls=0 # minimal disired distance to walls
 
 #need to be intitailized to play nice
@@ -43,7 +45,7 @@ from matplotlib.lines import Line2D
 plt.ion()
 
 #create a domain object from picture walls_trainstation
-dom = Domain(name = 'trainstation', background = 'trainstation/walls_trainstation.png', pixel_size = 0.1)
+dom = Domain(name = 'trainstation', background = 'trainstation/walls_trainstation2.png', pixel_size = 0.1)
 ## To define the color for the walls
 wall_color = [0,0,0]
 
@@ -60,13 +62,13 @@ dom.add_destination(dest)
 
 
 
-dom.plot_wall_dist(id=1, step=20,
-    title="Distance to walls and its gradient",
-    savefig=False, filename="room_wall_distance.png")
+#dom.plot_wall_dist(id=1, step=20,
+#    title="Distance to walls and its gradient",
+#    savefig=False, filename="room_wall_distance.png")
 
-dom.plot_desired_velocity('door',id=2, step=20,
-    title="Distance to the destination and desired velocity",
-    savefig=False, filename="room_desired_velocity.png")
+#dom.plot_desired_velocity('door',id=2, step=20,
+#    title="Distance to the destination and desired velocity",
+#    savefig=False, filename="room_desired_velocity.png")
 
 #intialize people
 
@@ -112,9 +114,9 @@ while(t<Tf):
         plot_people(20, dom, people, contacts,
                             colors, time=t,
                             plot_people=True, plot_contacts=False,
-                            plot_paths=True, plot_velocities=False,
+                            plot_paths=True, plot_velocities=True,
                             plot_desired_velocities=False, plot_sensors=False, savefig=False)
-        plt.pause(0.01)
+        plt.pause(0.001)
 
     t += dt
     cc +=1
