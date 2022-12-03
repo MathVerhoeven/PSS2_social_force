@@ -245,9 +245,12 @@ def compute_forces_dz(F, Fwall, xyrv, contacts, U, Vd, lambda_, delta, k, eta, F
 
     for i in range(Np):
         if xyrv[i][1] + 10 > dzy: #If the y coord of a person is 'close' to the dz
-            pass
+            #pass
             # Danger zone force
-            #Forces[i,1] -= Fdz*np.exp(-(min(dzy-xyrv[i][1],0)/delta)) #For upper danger zone ##NOTE: same delta for now
+            if dzy > xyrv[i][1]: #We hardcode a minimum :^), this is the normal case
+                Forces[i,1] -= Fdz*np.exp(-(dzy-xyrv[i][1])/delta) #For upper danger zone ##NOTE: same delta for now
+            else:
+                Forces[i,1] -= Fdz # Fdz = Fdz*exp(0)
             #Forces[i,1] -= Fdz*np.exp(-(dzy-xyrv[i][1])/delta) #For upper danger zone ##NOTE: same delta for now      
             #Forces[i,1] -= 100
     return Forces

@@ -4,7 +4,7 @@ Tf = 5 # end time
 tau = 0.5 
 mass = 80
 F = 2000
-Fdz = 10000000 #danger zone force ## NOTE: In final code this will depend on the person
+Fdz = 1000 #danger zone force ## NOTE: In final code this will depend on the person
 Fwall = 20000
 lambda_ = 0.5
 delta = 0.08 
@@ -16,7 +16,7 @@ drawper = 1000 # generate plot for 1 per 1000 iterations of dt
 
 ## Parameters for generating ##
 nn = 10 # number of people
-box = [120,130,35,40] # coordinates of the box that will be populated [xmin, xmax, ymin, ymax]
+box = [100,140,37,40] # coordinates of the box that will be populated [xmin, xmax, ymin, ymax]
 dest_name = "door" # name given to by domain.add_destination function
 radius_distribution = ["uniform",0.4,0.6] # distribution variable 
 velocity_distribution = ["normal",1.2,0.1] # distribution varible
@@ -28,7 +28,7 @@ dmin_walls=0 # minimal disired distance to walls
 dzy = 30 # y coord of upper danger zone #Moet 40 zijn ong
 
 #need to be intitailized to play nice
-draw = False
+draw = True #was False
 cc = 0
 itermax=10 # max number of uzawa projectsions, only intressting that is used as projection method
 
@@ -100,7 +100,7 @@ while(t<Tf):
     print("     Number of contacts: ",contacts.shape[0])
     #Forces = compute_forces(F, Fwall, people["xyrv"], contacts, people["Uold"], Vd, lambda_, delta, kappa, eta) 
     Forces = compute_forces_dz(F, Fwall, people["xyrv"], contacts, people["Uold"], Vd, lambda_, delta, kappa, eta, Fdz, dzy) 
-    print(Forces)        
+    #print(Forces)        
     nn = people["xyrv"].shape[0]
     people["U"] = dt*(Vd[:nn,:]-people["Uold"][:nn,:])/tau + people["Uold"][:nn,:] + dt*Forces[:nn,:]/mass
 
