@@ -1,10 +1,11 @@
+import numpy as np
 t = 0 # start time
 Tf = 5 # end time
 # variables for modeling
 tau = 0.5 
 mass = 80
 F = 2000
-Fdz = 1000 #danger zone force ## NOTE: In final code this will depend on the person
+Fdz = 1000 #danger zone force
 Fwall = 20000
 lambda_ = 0.5
 delta = 0.08 
@@ -15,14 +16,14 @@ drawper = 1000 # generate plot for 1 per 1000 iterations of dt
 
 
 ## Parameters for generating ##
-nn = 10 # number of people
-box = [100,140,37,40] # coordinates of the box that will be populated [xmin, xmax, ymin, ymax]
+nn = 15 # number of people
+box = [100,140,30,40] # coordinates of the box that will be populated [xmin, xmax, ymin, ymax]
 dest_name = "door" # name given to by domain.add_destination function
 radius_distribution = ["uniform",0.4,0.6] # distribution variable 
 velocity_distribution = ["normal",1.2,0.1] # distribution varible
 rng = 0 # some seed value for the distribution, if =0 then random value will be chosen on run
 dt = 0.0005 # timestep
-dmin_people=0 # minimal disired distance to other people 
+dmin_people=2 # minimal disired distance to other people 
 dmin_walls=0 # minimal disired distance to walls
 ## Station specific ##
 dzy = 30 # y coord of upper danger zone #Moet 40 zijn ong
@@ -32,6 +33,19 @@ draw = True #was False
 cc = 0
 itermax=10 # max number of uzawa projectsions, only intressting that is used as projection method
 
+## Awareness stuff ##
+# The awareness values should be between 0 and 1
+mean_awr = 0.5 # mean of awareness
+stdev_awr = 0.2 # stdev of awareness
+awr = np.random.normal(mean_awr, stdev_awr, nn) # awareness[i] is the awareness value of person i
+for i in range(awr.shape[0]): #Just in case you get unlucky
+    if awr[i] < 0:
+        awr[i] = 0
+    elif awr[i] > 1:
+        awr[i] = 1
+
+
+        
 
 # sys and Os are used to interact with the terminal and filesystem
 import sys, os
@@ -99,7 +113,7 @@ while(t<Tf):
     contacts = compute_contacts(dom, people["xyrv"], dmax)
     print("     Number of contacts: ",contacts.shape[0])
     #Forces = compute_forces(F, Fwall, people["xyrv"], contacts, people["Uold"], Vd, lambda_, delta, kappa, eta) 
-    Forces = compute_forces_dz(F, Fwall, people["xyrv"], contacts, people["Uold"], Vd, lambda_, delta, kappa, eta, Fdz, dzy) 
+    Forces = compute_forces_dz(F, Fwall, people["xyrv"], contacts, people["Uold"], Vd, lambda_, delta, kappa, eta, Fdz, dzy, awr) 
     #print(Forces)        
     nn = people["xyrv"].shape[0]
     people["U"] = dt*(Vd[:nn,:]-people["Uold"][:nn,:])/tau + people["Uold"][:nn,:] + dt*Forces[:nn,:]/mass

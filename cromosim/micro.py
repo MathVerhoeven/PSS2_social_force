@@ -159,7 +159,7 @@ def compute_forces(F, Fwall, xyrv, contacts, U, Vd, lambda_, delta, k, eta):
             Forces[i,1] -= fij*eij_y
     return Forces
 
-def compute_forces_dz(F, Fwall, xyrv, contacts, U, Vd, lambda_, delta, k, eta, Fdz, dzy):
+def compute_forces_dz(F, Fwall, xyrv, contacts, U, Vd, lambda_, delta, k, eta, Fdz, dzy, awr):
     """This function computes all the forces (isentropic interaction and
     friction) and sums them. The correcting pre-factor due to the vision
     angle is also used into the social force term.
@@ -247,12 +247,11 @@ def compute_forces_dz(F, Fwall, xyrv, contacts, U, Vd, lambda_, delta, k, eta, F
         if xyrv[i][1] + 10 > dzy: #If the y coord of a person is 'close' to the dz
             #pass
             # Danger zone force
-            if dzy > xyrv[i][1]: #We hardcode a minimum :^), this is the normal case
-                Forces[i,1] -= Fdz*np.exp(-(dzy-xyrv[i][1])/delta) #For upper danger zone ##NOTE: same delta for now
+            ## Note: This seems to be too aggressive for now
+            if dzy > xyrv[i][1]: #We hardcode a maximum force:^), this is the normal case
+                Forces[i,1] -= Fdz*np.exp(-(dzy-xyrv[i][1])/delta)*awr[i] #For upper danger zone ##NOTE: same delta for now
             else:
-                Forces[i,1] -= Fdz # Fdz = Fdz*exp(0)
-            #Forces[i,1] -= Fdz*np.exp(-(dzy-xyrv[i][1])/delta) #For upper danger zone ##NOTE: same delta for now      
-            #Forces[i,1] -= 100
+                Forces[i,1] -= Fdz*awr[i] # Fdz = Fdz*exp(0), the maximum
     return Forces
 
 
